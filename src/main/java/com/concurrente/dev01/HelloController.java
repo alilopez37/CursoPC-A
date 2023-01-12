@@ -1,31 +1,53 @@
 package com.concurrente.dev01;
 
-import com.concurrente.dev01.models.Bienvenida;
-import com.concurrente.dev01.models.BienvenidaRunnable;
-import javafx.event.ActionEvent;
+import com.concurrente.dev01.models.Pelota;
+import com.concurrente.dev01.models.Posicion;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.shape.Circle;
 
-public class HelloController {
-    @FXML
-    private Label welcomeText;
+import java.util.Observable;
+import java.util.Observer;
+
+public class HelloController implements Observer {
 
     @FXML
-    private Button btnRunnable;
+    private Button btnCrear;
+    @FXML
+    private Button btnDetener;
 
     @FXML
-    protected void onHelloButtonClick() {
-       for (int i=1;i<=100;i++)
-           new Bienvenida("Hilo"+i).start();
+    private Button btnSalir;
+
+    @FXML
+    private Circle pelota;
+    private Pelota pelotita;
+
+    @FXML
+    void btnCrearOnMouse(MouseEvent event) {
+        pelotita = new Pelota("P1", "Blue", 10);
+        pelotita.addObserver(this);
+        pelotita.setPosicion();
+        Thread hilo01 = new Thread(pelotita);
+        hilo01.setDaemon(true);
+        hilo01.start();
     }
 
     @FXML
-    void btnRunnableOnMouseClicked(MouseEvent event) {
-        BienvenidaRunnable hilo02 = new BienvenidaRunnable();
-        Thread hilo02b = new Thread(hilo02);
-        hilo02b.setName("Maincrafe - R");
-        hilo02b.start();
+    void btnDetener(MouseEvent event) {
+        pelotita.setStatus(false);
+    }
+    @FXML
+    void btnSalirOnMouse(MouseEvent event) {
+        System.exit(1);
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        Posicion pos = (Posicion)arg;
+
+        pelota.setLayoutX (pos.getX());
+        pelota.setLayoutY (pos.getY());
     }
 }
